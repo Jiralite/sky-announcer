@@ -3,6 +3,7 @@ import type { APIAttachment } from "@discordjs/core";
 import sharp from "sharp";
 import { request } from "undici";
 import { atpAgent } from "../at-proto.js";
+import { CUSTOM_EMOJI_REGULAR_EXPRESSION } from "../utility/constants.js";
 import { splitTextInto300 } from "../utility/functions.js";
 
 interface PostOptions {
@@ -65,7 +66,8 @@ export async function post({ createdAt, text, attachments }: PostOptions) {
 		};
 	}
 
-	const texts = splitTextInto300(text);
+	const parsedText = text.replaceAll(CUSTOM_EMOJI_REGULAR_EXPRESSION, ":$2:");
+	const texts = splitTextInto300(parsedText);
 	const firstText = texts.shift();
 
 	if (!firstText) {
