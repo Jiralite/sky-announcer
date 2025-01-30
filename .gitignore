@@ -1,0 +1,10 @@
+# Environment files.
+.env
+.env.production
+.env.development
+
+# Miscellaneous
+.DS_Store
+test.ts
+node_modules/
+distribution/
