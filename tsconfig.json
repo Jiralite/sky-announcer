@@ -20,5 +20,6 @@
 		"lib": ["ESNext"],
 		"target": "ESNext",
 		"skipLibCheck": true
-	}
+	},
+	"include": ["source/**/*"]
 }

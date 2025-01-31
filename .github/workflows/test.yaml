@@ -1,8 +1,8 @@
 name: Test
 on: push
 jobs:
-  style:
-    name: Styling
+  biome:
+    name: Biome
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11,8 +11,8 @@ jobs:
 
       - name: Run Biome
         run: biome ci --reporter=github
-  typescript:
-    name: TypeScript
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,5 +28,5 @@ jobs:
           run_install: |
             - args: [--frozen-lockfile]
 
-      - name: Validate TypeScript
+      - name: Validate TypeScript and tests
         run: pnpm run test
