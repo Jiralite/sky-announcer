@@ -10,7 +10,10 @@ import {
 	CHARACTER_LIMIT,
 	CUSTOM_EMOJI_REGULAR_EXPRESSION,
 	FALLBACK_CHANNEL_MENTION,
+	FALLBACK_ROLE_MENTION,
+	ROLE_REGULAR_EXPRESSION,
 	SKY_CHANNELS_MAP,
+	SKY_ROLES_MAP,
 } from "./constants.js";
 
 export function isMessageContextMenuCommand(
@@ -32,6 +35,12 @@ export function splitText(text: string): string[] {
 	parsedText = parsedText.replaceAll(CHANNEL_REGULAR_EXPRESSION, (_, id: Snowflake) => {
 		const channel = SKY_CHANNELS_MAP.get(id);
 		return channel ? `#${channel}` : FALLBACK_CHANNEL_MENTION;
+	});
+
+	// Replace role mentions with their names.
+	parsedText = parsedText.replaceAll(ROLE_REGULAR_EXPRESSION, (_, id: Snowflake) => {
+		const role = SKY_ROLES_MAP.get(id);
+		return role ? `@${role}` : FALLBACK_ROLE_MENTION;
 	});
 
 	if (!parsedText) {

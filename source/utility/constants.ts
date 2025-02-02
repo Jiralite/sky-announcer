@@ -2,6 +2,7 @@ import { MessageFlags, type Snowflake } from "@discordjs/core";
 
 export const CHARACTER_LIMIT = 300 as const;
 export const CHANNEL_REGULAR_EXPRESSION = /<#(?<id>\d{17,20})>/g;
+export const ROLE_REGULAR_EXPRESSION = /<@&(?<id>\d{17,20})>/g;
 
 export const CUSTOM_EMOJI_REGULAR_EXPRESSION =
 	/<(?<animated>a)?:(?<name>\w{2,32}):(?<id>\d{17,20})>/g;
@@ -510,3 +511,560 @@ export const SKY_CHANNELS_MAP = new Map<Snowflake, string>(
 );
 
 export const FALLBACK_CHANNEL_MENTION = "#channel" as const;
+
+const SKY_ROLES = [
+	{
+		name: "@everyone",
+		id: "575762611111592007",
+	},
+	{
+		name: "TGC Community Dev",
+		id: "575764424304885760",
+	},
+	{
+		name: "thatgamecompany Staff",
+		id: "575764806481477633",
+	},
+	{
+		name: "Community Shepherds",
+		id: "575765523682426901",
+	},
+	{
+		name: "Child of Light",
+		id: "575766801779130368",
+	},
+	{
+		name: "Bots",
+		id: "575856817092034561",
+	},
+	{
+		name: "Ascended Child of Light",
+		id: "585576447469551620",
+	},
+	{
+		name: "YAGPDB.xyz",
+		id: "586301298765201428",
+	},
+	{
+		name: "GearBot",
+		id: "598835763244957719",
+	},
+	{
+		name: "Community Moderators",
+		id: "600489743716712458",
+	},
+	{
+		name: "Muted",
+		id: "600490107472052244",
+	},
+	{
+		name: "Beta Invites (Ping)",
+		id: "614235013873139752",
+	},
+	{
+		name: "Winged Moderator",
+		id: "621081972533493784",
+	},
+	{
+		name: "thatSkybot",
+		id: "624930970398621696",
+	},
+	{
+		name: "🍁",
+		id: "647181587401670686",
+	},
+	{
+		name: "🎨 Fan Artist",
+		id: "651955991415357440",
+	},
+	{
+		name: "🎵 Sky Musician",
+		id: "651956322698526720",
+	},
+	{
+		name: "✏️ Fanfiction Writer",
+		id: "651956422447333417",
+	},
+	{
+		name: "🔴 YouTuber",
+		id: "651956510615797792",
+	},
+	{
+		name: "🎙️ Streamer",
+		id: "651956614374621205",
+	},
+	{
+		name: "🎥 TikToker",
+		id: "651956710193496084",
+	},
+	{
+		name: "📸 Instagrammer",
+		id: "651956778032168973",
+	},
+	{
+		name: "🐦 Twitter Squad",
+		id: "651956903341195300",
+	},
+	{
+		name: "🍍🍕Meme Gang",
+		id: "651956962174566400",
+	},
+	{
+		name: "🖼️ Screenshot Connoisseur",
+		id: "651957058828238858",
+	},
+	{
+		name: "💡Buff Moth",
+		id: "651957101454950401",
+	},
+	{
+		name: "📖 Story & Lore Aficionado",
+		id: "651957167858909205",
+	},
+	{
+		name: "👥 Social Butterfly",
+		id: "651957243272626177",
+	},
+	{
+		name: "👤 Solo Wanderer",
+		id: "651957312260538399",
+	},
+	{
+		name: "👖Cosmetic Collector",
+		id: "651957413502648320",
+	},
+	{
+		name: "☁️ Aerial Explorer",
+		id: "651957502052925441",
+	},
+	{
+		name: "🦐 Dark Creature Fan",
+		id: "651957560936497173",
+	},
+	{
+		name: "👶 Chibi",
+		id: "651957664334479380",
+	},
+	{
+		name: "📚 Sky Roleplayer",
+		id: "651957734664699929",
+	},
+	{
+		name: "☂️ Season of Lightseekers",
+		id: "651957899727339556",
+	},
+	{
+		name: "🙏 Season of Gratitude",
+		id: "651957901828685824",
+	},
+	{
+		name: "🎀  Season of Belonging",
+		id: "651958220038078504",
+	},
+	{
+		name: "Pink Cape",
+		id: "651972409875759125",
+	},
+	{
+		name: "Cyan Cape",
+		id: "651972511721848883",
+	},
+	{
+		name: "Navy Cape",
+		id: "651972519875575808",
+	},
+	{
+		name: "Purple Cape",
+		id: "651972799447040010",
+	},
+	{
+		name: "Red Cape",
+		id: "651972870980894720",
+	},
+	{
+		name: "Green Cape",
+		id: "651972940488900618",
+	},
+	{
+		name: "Black Cape",
+		id: "651973018993557515",
+	},
+	{
+		name: "White Cape",
+		id: "651973026375532554",
+	},
+	{
+		name: "Orange Cape",
+		id: "651973157258788874",
+	},
+	{
+		name: "Teal Cape",
+		id: "651973287437664278",
+	},
+	{
+		name: "Brown Cape",
+		id: "651973492065173515",
+	},
+	{
+		name: "Yellow Cape",
+		id: "652600663565664267",
+	},
+	{
+		name: "🤖 Android",
+		id: "653349351929806869",
+	},
+	{
+		name: "🍎 iOS",
+		id: "653349532519628821",
+	},
+	{
+		name: "🛠️ Bug Hunter",
+		id: "653349539662659666",
+	},
+	{
+		name: "✨ Tall",
+		id: "653350301029629952",
+	},
+	{
+		name: "🐶 Oreo Fan Club",
+		id: "653351827038928916",
+	},
+	{
+		name: "Shadow",
+		id: "653385349246222343",
+	},
+	{
+		name: "🎨 TGC Artist",
+		id: "669374614832676885",
+	},
+	{
+		name: "❄️ Season of Rhythm",
+		id: "670415937538752533",
+	},
+	{
+		name: "🛠️ TGC Quality Assurance",
+		id: "670417336871682051",
+	},
+	{
+		name: "🎮 TGC Designer",
+		id: "670417528702631936",
+	},
+	{
+		name: "💻 TGC Engineer",
+		id: "670417891623174184",
+	},
+	{
+		name: "TGC Player Support",
+		id: "674424163481419791",
+	},
+	{
+		name: "✨ Season of Enchantment",
+		id: "705505358868906015",
+	},
+	{
+		name: "Beta Updates (Ping)",
+		id: "718595283113476188",
+	},
+	{
+		name: "🏝️ Season of Sanctuary",
+		id: "733499963816018063",
+	},
+	{
+		name: "💠 Season of Prophecy",
+		id: "763594069556723732",
+	},
+	{
+		name: "Child of the Bot",
+		id: "765989653949579304",
+	},
+	{
+		name: "⛸️ Season of Dreams",
+		id: "797203175110213644",
+	},
+	{
+		name: "Not a Krill",
+		id: "818924325633654824",
+	},
+	{
+		name: "Totally A Krill",
+		id: "818978303243190302",
+	},
+	{
+		name: "A crab",
+		id: "819720424992145458",
+	},
+	{
+		name: "Tuna King",
+		id: "827341301833531422",
+	},
+	{
+		name: "🎺 Season of Assembly",
+		id: "828795829657534474",
+	},
+	{
+		name: "🎮 Nintendo Switch",
+		id: "867546215481999400",
+	},
+	{
+		name: "👑 Season of The Little Prince",
+		id: "867550456708071424",
+	},
+	{
+		name: "3 Krill in a Trenchcoat",
+		id: "872381648421945354",
+	},
+	{
+		name: "A manta",
+		id: "901959573974425640",
+	},
+	{
+		name: "A jellyfish",
+		id: "901960274754555924",
+	},
+	{
+		name: "A butterfly",
+		id: "901960358267326494",
+	},
+	{
+		name: "A shadow",
+		id: "901960767119704064",
+	},
+	{
+		name: "A bird",
+		id: "901960866226913340",
+	},
+	{
+		name: "A cosmic manta",
+		id: "901964236396314645",
+	},
+	{
+		name: "🕊️ Season of Flight",
+		id: "902073129248116776",
+	},
+	{
+		name: "A spirit",
+		id: "902293337028055111",
+	},
+	{
+		name: "A moth",
+		id: "902294230679048222",
+	},
+	{
+		name: "Oreo",
+		id: "902295610454069378",
+	},
+	{
+		name: "A buff moth",
+		id: "902297335743279174",
+	},
+	{
+		name: "An elder bird",
+		id: "902307770815119370",
+	},
+	{
+		name: "A weasel",
+		id: "902311536125673503",
+	},
+	{
+		name: "A koi fish",
+		id: "902321584159723560",
+	},
+	{
+		name: "A candle",
+		id: "902327931680989285",
+	},
+	{
+		name: "A Rhythm Guide",
+		id: "902330765352783912",
+	},
+	{
+		name: "A krilled skykid",
+		id: "902346221665005629",
+	},
+	{
+		name: "A Flight Guide",
+		id: "902369136468959242",
+	},
+	{
+		name: "A Prophecy Guide",
+		id: "902418537832906752",
+	},
+	{
+		name: "A thatskybot",
+		id: "902434147916709928",
+	},
+	{
+		name: "A pair of pants",
+		id: "902446961414770728",
+	},
+	{
+		name: "A Gratitude Guide",
+		id: "902455240404647948",
+	},
+	{
+		name: "A bean",
+		id: "902462040596164619",
+	},
+	{
+		name: "Just a fish",
+		id: "902616235005583400",
+	},
+	{
+		name: "A Dreams Skater",
+		id: "902648539014893680",
+	},
+	{
+		name: "A bunny",
+		id: "903083512951869530",
+	},
+	{
+		name: "A frog",
+		id: "903157404957548564",
+	},
+	{
+		name: "⚓ Season of Abyss",
+		id: "931453857240870932",
+	},
+	{
+		name: "🎭 Season of Performance",
+		id: "959509376257912934",
+	},
+	{
+		name: "A Performance Guide",
+		id: "965759873935609916",
+	},
+	{
+		name: "🌋Season of Shattering",
+		id: "998670730155786330",
+	},
+	{
+		name: "🐟 Sardine",
+		id: "1007107528074743889",
+	},
+	{
+		name: "🎤 Season of AURORA",
+		id: "1030621699579854910",
+	},
+	{
+		name: "thatskybotid",
+		id: "1039326614955249828",
+	},
+	{
+		name: "🕹️ Playstation",
+		id: "1051014910143889458",
+	},
+	{
+		name: "oh wow",
+		id: "1055204648966951012",
+	},
+	{
+		name: "love",
+		id: "1055204680101281834",
+	},
+	{
+		name: "star",
+		id: "1055345826962100294",
+	},
+	{
+		name: "Child of Burger",
+		id: "1080281570600030239",
+	},
+	{
+		name: "🧸 Season of Remembrance",
+		id: "1080324371115163648",
+	},
+	{
+		name: "🐻 Season of Passage",
+		id: "1102709780952383629",
+	},
+	{
+		name: "Steam PC Beta Updates (Ping)",
+		id: "1130675053508435968",
+	},
+	{
+		name: "📷 Season of Moments",
+		id: "1135672699163783330",
+	},
+	{
+		name: "✨",
+		id: "1159675290793033818",
+	},
+	{
+		name: "⛲ Season of Revival",
+		id: "1170145821250048021",
+	},
+	{
+		name: "🦌 Season of the Nine-Colored Deer",
+		id: "1198051921982914662",
+	},
+	{
+		name: "🚙 Sky Uber",
+		id: "1199511353812078732",
+	},
+	{
+		name: "💻 PC",
+		id: "1199541712905846844",
+	},
+	{
+		name: "#2 Peas Fan",
+		id: "1224763627027042485",
+	},
+	{
+		name: "SKYBOTS RIDDLE CHAMPION",
+		id: "1229304111783219240",
+	},
+	{
+		name: "Team Daylight Prairie",
+		id: "1267337444270018632",
+	},
+	{
+		name: "Team Hidden Forest",
+		id: "1267337682741100577",
+	},
+	{
+		name: "Team Valley of Triumph",
+		id: "1267337894910234736",
+	},
+	{
+		name: "Team Golden Wasteland",
+		id: "1267338016083546112",
+	},
+	{
+		name: "🏠 Season of Nesting",
+		id: "1276686264048947210",
+	},
+	{
+		name: "🎶 Season of Duets",
+		id: "1276687455830937723",
+	},
+	{
+		name: "📖 Season of Moomin",
+		id: "1276689114963513347",
+	},
+	{
+		name: "Sky Creator Troupe",
+		id: "1285784018763386910",
+	},
+	{
+		name: "Quoth the Raven!",
+		id: "1299231901659299882",
+	},
+	{
+		name: "SkyAffogata",
+		id: "1300572225501528079",
+	},
+	{
+		name: "🧣Season of Radiance",
+		id: "1313937131873501205",
+	},
+	{
+		name: "#1 Pickle Lover",
+		id: "1334982433916977326",
+	},
+];
+
+export const SKY_ROLES_MAP = new Map<Snowflake, string>(
+	SKY_ROLES.map((role) => [role.id, role.name]),
+);
+
+export const FALLBACK_ROLE_MENTION = "@role" as const;
