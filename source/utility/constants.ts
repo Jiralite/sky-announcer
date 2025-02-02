@@ -1,11 +1,15 @@
 import { MessageFlags, type Snowflake } from "@discordjs/core";
 
 export const CHARACTER_LIMIT = 300 as const;
+export const TIME_ZONE = "America/Los_Angeles" as const;
 export const CHANNEL_REGULAR_EXPRESSION = /<#(?<id>\d{17,20})>/g;
 export const ROLE_REGULAR_EXPRESSION = /<@&(?<id>\d{17,20})>/g;
 
 export const CUSTOM_EMOJI_REGULAR_EXPRESSION =
 	/<(?<animated>a)?:(?<name>\w{2,32}):(?<id>\d{17,20})>/g;
+
+export const TIMESTAMP_REGULAR_EXPRESSION =
+	/<t:(?<timestamp>\d{7,12})(?::(?<style>t|T|d|D|f|F|R))?>/g;
 
 export const ERROR_RESPONSE = {
 	content: "There was an error! Best report this.",

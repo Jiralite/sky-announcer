@@ -4,6 +4,7 @@ import {
 	type APIModalSubmitGuildInteraction,
 	ApplicationCommandType,
 	InteractionType,
+	Locale,
 	type Snowflake,
 } from "@discordjs/core";
 import {
@@ -15,6 +16,8 @@ import {
 	ROLE_REGULAR_EXPRESSION,
 	SKY_CHANNELS_MAP,
 	SKY_ROLES_MAP,
+	TIMESTAMP_REGULAR_EXPRESSION,
+	TIME_ZONE,
 } from "./constants.js";
 
 export function isMessageContextMenuCommand(
@@ -47,6 +50,64 @@ export function cleanDiscordContent(content: string) {
 				const role = SKY_ROLES_MAP.get(id);
 				return role ? `@${role}` : FALLBACK_ROLE_MENTION;
 			})
+			// Replace timestamp markdown.
+			.replaceAll(
+				TIMESTAMP_REGULAR_EXPRESSION,
+				(_, timestampSeconds: string, style: "t" | "T" | "d" | "D" | "f" | "F" | "R" = "f") => {
+					const timestamp = Number(timestampSeconds) * 1000;
+
+					if (style === "t") {
+						return Intl.DateTimeFormat(Locale.EnglishUS, {
+							timeZone: TIME_ZONE,
+							timeStyle: "short",
+						}).format(timestamp);
+					}
+
+					if (style === "T") {
+						return Intl.DateTimeFormat(Locale.EnglishUS, {
+							timeZone: TIME_ZONE,
+							timeStyle: "medium",
+						}).format(timestamp);
+					}
+
+					if (style === "d") {
+						return Intl.DateTimeFormat(Locale.EnglishUS, {
+							timeZone: TIME_ZONE,
+							dateStyle: "short",
+						}).format(timestamp);
+					}
+
+					if (style === "D") {
+						return Intl.DateTimeFormat(Locale.EnglishUS, {
+							timeZone: TIME_ZONE,
+							dateStyle: "long",
+						}).format(timestamp);
+					}
+
+					if (style === "f") {
+						return Intl.DateTimeFormat(Locale.EnglishUS, {
+							timeZone: TIME_ZONE,
+							dateStyle: "long",
+							timeStyle: "short",
+						}).format(timestamp);
+					}
+
+					if (style === "F") {
+						return Intl.DateTimeFormat(Locale.EnglishUS, {
+							timeZone: TIME_ZONE,
+							dateStyle: "full",
+							timeStyle: "short",
+						}).format(timestamp);
+					}
+
+					// There is no relative time on Bluesky.
+					return Intl.DateTimeFormat(Locale.EnglishUS, {
+						timeZone: TIME_ZONE,
+						dateStyle: "short",
+						timeStyle: "short",
+					}).format(timestamp);
+				},
+			)
 	);
 }
 
