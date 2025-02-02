@@ -1,15 +1,17 @@
 import { Blob } from "node:buffer";
-import type { APIAttachment } from "@discordjs/core";
+import {
+	type APIAttachment,
+	type APIModalSubmitGuildInteraction,
+	MessageFlags,
+} from "@discordjs/core";
 import sharp from "sharp";
 import { request } from "undici";
 import { atpAgent } from "../at-proto.js";
+import { POST_ATTACHMENTS_CACHE } from "../caches/post-attachments.js";
+import { client } from "../discord.js";
 import { splitText } from "../utility/functions.js";
-
-interface PostOptions {
-	createdAt: string;
-	text: string;
-	attachments: APIAttachment[];
-}
+import { ModalResolver } from "../utility/modal-resolver.js";
+import { ANNOUNCE_MODAL_CONTENT_CUSTOM_ID } from "../utility/string-store.js";
 
 async function compress(arrayBuffer: ArrayBuffer, mediaType?: string | undefined) {
 	const gif = mediaType === "image/gif";
@@ -26,6 +28,12 @@ async function compress(arrayBuffer: ArrayBuffer, mediaType?: string | undefined
 		],
 		{ type: mediaType },
 	);
+}
+
+interface PostOptions {
+	createdAt: string;
+	text: string;
+	attachments: APIAttachment[];
 }
 
 export async function post({ createdAt, text, attachments }: PostOptions) {
@@ -92,4 +100,32 @@ export async function post({ createdAt, text, attachments }: PostOptions) {
 	}
 
 	return postData;
+}
+
+interface ParseModalData {
+	id: string;
+	createdAt: string;
+}
+
+export async function parseModal(
+	interaction: APIModalSubmitGuildInteraction,
+	data: ParseModalData,
+) {
+	const components = new ModalResolver(interaction.data.components);
+
+	const createdPost = await post({
+		createdAt: data.createdAt,
+		text: components.getTextInputValue(ANNOUNCE_MODAL_CONTENT_CUSTOM_ID),
+		attachments: POST_ATTACHMENTS_CACHE.get(data.id) ?? [],
+	});
+
+	const did = createdPost.uri.slice(5, createdPost.uri.indexOf("/", 5));
+	const rev = createdPost.uri.slice(createdPost.uri.lastIndexOf("/") + 1);
+
+	await client.api.interactions.reply(interaction.id, interaction.token, {
+		content: `https://bsky.app/profile/${did}/post/${rev}`,
+		flags: MessageFlags.Ephemeral,
+	});
+
+	POST_ATTACHMENTS_CACHE.delete(data.id);
 }

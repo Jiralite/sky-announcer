@@ -1,6 +1,7 @@
 import {
 	type APIInteraction,
 	type APIMessageApplicationCommandInteraction,
+	type APIModalSubmitGuildInteraction,
 	ApplicationCommandType,
 	InteractionType,
 	type Snowflake,
@@ -25,50 +26,57 @@ export function isMessageContextMenuCommand(
 	);
 }
 
+export function isGuildModalSubmit(
+	interaction: APIInteraction,
+): interaction is APIModalSubmitGuildInteraction {
+	return interaction.type === InteractionType.ModalSubmit && "guild_id" in interaction;
+}
+
+export function cleanDiscordContent(content: string) {
+	return (
+		content
+			// Extract names of custom emojis.
+			.replaceAll(CUSTOM_EMOJI_REGULAR_EXPRESSION, ":$2:")
+			// Replace channel mentions with their names.
+			.replaceAll(CHANNEL_REGULAR_EXPRESSION, (_, id: Snowflake) => {
+				const channel = SKY_CHANNELS_MAP.get(id);
+				return channel ? `#${channel}` : FALLBACK_CHANNEL_MENTION;
+			})
+			// Replace role mentions with their names.
+			.replaceAll(ROLE_REGULAR_EXPRESSION, (_, id: Snowflake) => {
+				const role = SKY_ROLES_MAP.get(id);
+				return role ? `@${role}` : FALLBACK_ROLE_MENTION;
+			})
+	);
+}
+
 export function splitText(text: string): string[] {
-	let parsedText = text;
-
-	// Trim ids of custom emojis.
-	parsedText = parsedText.replaceAll(CUSTOM_EMOJI_REGULAR_EXPRESSION, ":$2:");
-
-	// Replace channel mentions with their names.
-	parsedText = parsedText.replaceAll(CHANNEL_REGULAR_EXPRESSION, (_, id: Snowflake) => {
-		const channel = SKY_CHANNELS_MAP.get(id);
-		return channel ? `#${channel}` : FALLBACK_CHANNEL_MENTION;
-	});
-
-	// Replace role mentions with their names.
-	parsedText = parsedText.replaceAll(ROLE_REGULAR_EXPRESSION, (_, id: Snowflake) => {
-		const role = SKY_ROLES_MAP.get(id);
-		return role ? `@${role}` : FALLBACK_ROLE_MENTION;
-	});
-
-	if (!parsedText) {
+	if (!text) {
 		return [];
 	}
 
-	if (!/\s/.test(parsedText)) {
+	if (!/\s/.test(text)) {
 		const chunks: string[] = [];
 
-		for (let i = 0; i < parsedText.length; i += CHARACTER_LIMIT) {
-			chunks.push(parsedText.slice(i, i + CHARACTER_LIMIT));
+		for (let i = 0; i < text.length; i += CHARACTER_LIMIT) {
+			chunks.push(text.slice(i, i + CHARACTER_LIMIT));
 		}
 
 		return chunks;
 	}
 
-	const trimmed = parsedText.trim();
+	const trimmed = text.trim();
 
 	if (trimmed === "") {
 		return [];
 	}
 
-	if (parsedText.split(/\s+/).filter(Boolean).length === 1) {
+	if (text.split(/\s+/).filter(Boolean).length === 1) {
 		return [trimmed];
 	}
 
 	const chunks: string[] = [];
-	let remainingText = parsedText;
+	let remainingText = text;
 
 	while (remainingText.length > 0) {
 		if (remainingText.length <= CHARACTER_LIMIT) {

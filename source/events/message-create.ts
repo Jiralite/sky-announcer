@@ -1,10 +1,11 @@
 import { GatewayDispatchEvents, MessageFlags } from "@discordjs/core";
 import { DiscordSnowflake } from "@sapphire/snowflake";
-import { post } from "../services/bluesky.js";
+import { post } from "../features/bluesky.js";
 import {
 	RECEIVED_ANNOUNCEMENTS_CHANNEL_ID,
 	SKY_CHILDREN_OF_THE_LIGHT_GUILD_ID,
 } from "../utility/configuration.js";
+import { cleanDiscordContent } from "../utility/functions.js";
 import type { Event } from "./index.js";
 
 const name = GatewayDispatchEvents.MessageCreate;
@@ -23,7 +24,7 @@ export default {
 				createdAt: new Date(
 					DiscordSnowflake.timestampFrom(data.message_reference.message_id),
 				).toISOString(),
-				text: data.content,
+				text: cleanDiscordContent(data.content),
 				attachments: data.attachments,
 			});
 		}

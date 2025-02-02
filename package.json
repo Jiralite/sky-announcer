@@ -19,6 +19,7 @@
 		"@discordjs/rest": "^2.4.2",
 		"@discordjs/ws": "^2.0.1",
 		"@sapphire/snowflake": "^3.5.5",
+		"@sapphire/string-store": "^2.0.0",
 		"sharp": "^0.33.5",
 		"undici": "^7.3.0"
 	},

@@ -1,29 +1,47 @@
-import { type APIMessageApplicationCommandInteraction, MessageFlags } from "@discordjs/core";
+import {
+	type APIMessageApplicationCommandInteraction,
+	ComponentType,
+	TextInputStyle,
+} from "@discordjs/core";
+import { POST_ATTACHMENTS_CACHE } from "../../caches/post-attachments.js";
 import { client } from "../../discord.js";
-import { post } from "../../services/bluesky.js";
-import { APPLICATION_ID } from "../../utility/configuration.js";
+import { cleanDiscordContent } from "../../utility/functions.js";
+import {
+	ANNOUNCE_MODAL_CONTENT_CUSTOM_ID,
+	CustomIdType,
+	schemaStore,
+} from "../../utility/string-store.js";
 
 export default {
 	name: "Announce",
 	async messageContextMenu(interaction: APIMessageApplicationCommandInteraction) {
-		await client.api.interactions.defer(interaction.id, interaction.token, {
-			flags: MessageFlags.Ephemeral,
-		});
-
 		const message = interaction.data.resolved.messages[interaction.data.target_id]!;
+		POST_ATTACHMENTS_CACHE.set(message.id, message.attachments);
 
-		const createdPost = await post({
-			createdAt: new Date(message.timestamp).toISOString(),
-			text: message.content,
-			attachments: message.attachments,
-		});
-
-		const did = createdPost.uri.slice(5, createdPost.uri.indexOf("/", 5));
-		const rev = createdPost.uri.slice(createdPost.uri.lastIndexOf("/") + 1);
-
-		await client.api.interactions.editReply(APPLICATION_ID, interaction.token, {
-			content: `https://bsky.app/profile/${did}/post/${rev}`,
-			flags: MessageFlags.Ephemeral,
+		await client.api.interactions.createModal(interaction.id, interaction.token, {
+			title: "Announce",
+			custom_id: schemaStore.serialize(CustomIdType.AnnounceModal, {
+				id: message.id,
+				createdAt: new Date(message.timestamp).toISOString(),
+			}),
+			components: [
+				{
+					type: ComponentType.ActionRow,
+					components: [
+						{
+							type: ComponentType.TextInput,
+							label: "Amend content if neccessary.",
+							custom_id: ANNOUNCE_MODAL_CONTENT_CUSTOM_ID,
+							style: TextInputStyle.Paragraph,
+							max_length: 4000,
+							min_length: 0,
+							placeholder: "The content here will be posted.",
+							value: cleanDiscordContent(message.content),
+							required: false,
+						},
+					],
+				},
+			],
 		});
 	},
 } as const;

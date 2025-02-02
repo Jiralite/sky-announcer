@@ -23,6 +23,9 @@ importers:
       '@sapphire/snowflake':
         specifier: ^3.5.5
         version: 3.5.5
+      '@sapphire/string-store':
+        specifier: ^2.0.0
+        version: 2.0.0
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
@@ -670,6 +673,10 @@ packages:
   '@sapphire/snowflake@3.5.5':
     resolution: {integrity: sha512-xzvBr1Q1c4lCe7i6sRnrofxeO1QTP/LKQ6A6qy0iB4x5yfiSfARMEQEghojzTNALDTcv8En04qYNIco9/K9eZQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+
+  '@sapphire/string-store@2.0.0':
+    resolution: {integrity: sha512-Ba6HQqzvtTu+8Ye4Vmd51lU2+L9C3KAWbvtIbkJlVEC9iKC98hAvDronE/qOgMDZfYI8KgT9dsLXtGuA8sFneQ==}
+    engines: {node: '>=v20', npm: '>=10'}
 
   '@snyk/github-codeowners@1.1.0':
     resolution: {integrity: sha512-lGFf08pbkEac0NYgVf4hdANpAgApRjNByLXB+WBip3qj1iendOIyAwP2GKkKbQMNVy2r1xxDf0ssfWscoiC+Vw==}
@@ -1603,6 +1610,8 @@ snapshots:
   '@sapphire/async-queue@1.5.5': {}
 
   '@sapphire/snowflake@3.5.5': {}
+
+  '@sapphire/string-store@2.0.0': {}
 
   '@snyk/github-codeowners@1.1.0':
     dependencies:
