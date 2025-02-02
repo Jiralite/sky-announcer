@@ -2,3 +2,8 @@ app = "sky-announcer"
 primary_region = "iad"
 kill_signal = "SIGINT"
 kill_timeout = 5
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
