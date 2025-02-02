@@ -3,8 +3,15 @@ import {
 	type APIMessageApplicationCommandInteraction,
 	ApplicationCommandType,
 	InteractionType,
+	type Snowflake,
 } from "@discordjs/core";
-import { CHARACTER_LIMIT, CUSTOM_EMOJI_REGULAR_EXPRESSION } from "./constants.js";
+import {
+	CHANNEL_REGULAR_EXPRESSION,
+	CHARACTER_LIMIT,
+	CUSTOM_EMOJI_REGULAR_EXPRESSION,
+	FALLBACK_CHANNEL_MENTION,
+	SKY_CHANNELS_MAP,
+} from "./constants.js";
 
 export function isMessageContextMenuCommand(
 	interaction: APIInteraction,
@@ -16,7 +23,16 @@ export function isMessageContextMenuCommand(
 }
 
 export function splitText(text: string): string[] {
-	const parsedText = text.replaceAll(CUSTOM_EMOJI_REGULAR_EXPRESSION, ":$2:");
+	let parsedText = text;
+
+	// Trim ids of custom emojis.
+	parsedText = parsedText.replaceAll(CUSTOM_EMOJI_REGULAR_EXPRESSION, ":$2:");
+
+	// Replace channel mentions with their names.
+	parsedText = parsedText.replaceAll(CHANNEL_REGULAR_EXPRESSION, (_, id: Snowflake) => {
+		const channel = SKY_CHANNELS_MAP.get(id);
+		return channel ? `#${channel}` : FALLBACK_CHANNEL_MENTION;
+	});
 
 	if (!parsedText) {
 		return [];
